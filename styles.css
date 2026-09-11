@@ -1,0 +1,437 @@
+/* ===================================================================
+   Бурение скважин — лендинг
+   Чистая пересборка с оригинала на Creatium.
+   Палитра/типографика сняты с реальной страницы попиксельно.
+   =================================================================== */
+
+/* ---------- Палитра ---------- */
+:root {
+  --bg-page:          #ffffff;   /* фон страницы */
+  --bg-section:       #f4f4f4;   /* фон секций (светло-серый) */
+  --bg-card:          #ffffff;   /* карточки */
+  --text-main:        #333333;   /* основной текст */
+  --text-dark:        #040802;   /* почти чёрный */
+
+  --accent-green:     #70AD47;   /* акцентный зелёный (выделения) */
+  --badge-red:        #F88A8A;   /* "КРАСНАЯ ТАБЛЕТКА" */
+  --badge-green:      #A2B992;   /* "ОТВЕТ ПРОСТ" */
+  --pill-blue:        #77D1F1;   /* "СИНЯЯ ТАБЛЕТКА" */
+  --messenger-blue:   #2547FB;   /* иконка MAX */
+  --phone-dark:       #353535;   /* иконка телефона */
+  --chip-gray:        #848484;   /* серые chip-кнопки */
+
+  --shadow-card:      0 4px 18px rgba(0, 0, 0, 0.08);
+  --radius-card:      16px;
+  --radius-pill:      999px;
+}
+
+/* ---------- Reset ---------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "Manrope", "TTNorms Medium", -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, Arial, sans-serif;
+  font-weight: 500;
+  color: var(--text-main);
+  background: var(--bg-page);
+  line-height: 1.55;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; text-decoration: none; }
+
+/* ---------- Layout ---------- */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.container.narrow {
+  max-width: 680px;
+}
+.container--header {
+  max-width: 720px;
+}
+.section {
+  background: var(--bg-section);
+  padding: 28px 0 48px;
+}
+.section + .section { padding-top: 8px; }
+.section--final { padding-bottom: 80px; }
+
+/* ===================================================================
+   ШАПКА
+   =================================================================== */
+.site-header {
+  background: var(--bg-page);
+  padding: 14px 0;
+  border-bottom: 1px solid #ececec;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.usp {
+  display: flex;
+  flex-direction: column;
+  font-size: 19px;
+  line-height: 1.35;
+  color: var(--accent-green);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.header-contacts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 51px;
+  height: 51px;
+  border-radius: 50%;
+  background: #2547FB;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.contact-icon img { width: 30px; height: 30px; object-fit: contain; display: block; }
+.contact-icon:hover { transform: translateY(-2px); filter: brightness(1.05); }
+
+/* Квадратная кнопка телефона со скруглёнными углами */
+.phone-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 51px;
+  height: 51px;
+  border-radius: 14px;
+  background: #353535;
+  color: #fff;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.phone-btn svg { display: block; }
+.phone-btn:hover { transform: translateY(-2px); background: #1f1f1f; }
+
+/* ===================================================================
+   HERO
+   =================================================================== */
+.hero {
+  background: var(--bg-section);
+  padding: 28px 0 36px;
+  text-align: center;
+}
+.hero-title {
+  font-size: 30px;
+  line-height: 1.25;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+.accent { color: var(--accent-green); font-weight: 700; }
+
+.hero-meta {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px 24px;
+  margin: 0 auto;
+}
+.card--question {
+  max-width: 580px;
+  font-size: 19px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+/* Фото с бейджами и подписью */
+.hero-photo-wrap {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.hero-photo { width: 100%; }
+.hero-photo-caption {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  background: rgba(0, 0, 0, 0.66);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  max-width: 240px;
+  backdrop-filter: blur(4px);
+}
+.hero-photo-caption strong { display: block; font-size: 14px; margin-bottom: 2px; }
+
+/* ===================================================================
+   ЗАГОЛОВКИ СЕКЦИЙ
+   =================================================================== */
+.section-title {
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 28px;
+  line-height: 1.25;
+}
+.section-title--left {
+  text-align: left;
+  margin-bottom: 0;
+  font-size: 24px;
+}
+
+/* ===================================================================
+   БЕЙДЖИ
+   =================================================================== */
+.badge {
+  display: inline-block;
+  padding: 8px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin-bottom: 20px;
+}
+.badge--muted { background: #cde0c4; color: #2c4a23; display: inline-block; padding: 10px 22px; font-size: 16px; font-weight: 700; }
+.badge--red   { background: var(--badge-red); }
+.badge--green { background: var(--badge-green); }
+
+/* ===================================================================
+   КАРТОЧКА ВЫБОРА (Матрица)
+   =================================================================== */
+.choice-block {
+  text-align: left;
+}
+.choice-block .badge { margin-bottom: 16px; }
+.card--choice {
+  text-align: left;
+  font-size: 18px;
+  line-height: 1.6;
+}
+.card--choice p { margin-bottom: 14px; }
+.card--choice p:last-of-type { margin-bottom: 28px; }
+.card--choice .btn { display: block; margin: 0 auto; }
+
+/* Кнопка-таблетка */
+.btn {
+  display: inline-block;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  border: none;
+  font-family: inherit;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.btn:active { transform: translateY(0); }
+
+.btn--blue-pill {
+  background: var(--pill-blue);
+  color: #fff;
+  padding: 16px 38px;
+  border-radius: var(--radius-pill);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  box-shadow: 0 4px 14px rgba(119, 209, 241, 0.45);
+}
+
+/* ===================================================================
+   ИСТОРИЯ (утренняя сцена)
+   =================================================================== */
+.card--story {
+  font-size: 18px;
+  line-height: 1.7;
+}
+.card--story p { margin-bottom: 18px; }
+.story-figure {
+  margin: 28px -8px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.story-figure img {
+  width: 100%;
+  border-radius: 12px;
+}
+.story-figure--compare { margin: 32px 0; }
+
+.chip-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 28px 0;
+}
+.chip {
+  background: var(--chip-gray);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.story-outro {
+  font-size: 18px;
+  margin-top: 28px !important;
+  margin-bottom: 28px !important;
+  line-height: 1.6;
+}
+
+/* ===================================================================
+   КРАСНАЯ ТАБЛЕТКА — список рисков
+   =================================================================== */
+.card--red-pill {
+  font-size: 18px;
+  line-height: 1.6;
+}
+.card--red-pill p { margin-bottom: 14px; }
+.risks-list {
+  list-style: none;
+  margin-top: 14px;
+}
+.risks-list li {
+  padding: 8px 0;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+/* Brain block */
+.brain-block {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 36px 0 24px;
+}
+.brain-icon { flex-shrink: 0; }
+
+.card--explain {
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.card--insight {
+  font-size: 18px;
+  line-height: 1.65;
+  text-align: left;
+}
+.card--insight strong { font-weight: 700; }
+
+/* ===================================================================
+   ФИНАЛ + CTA
+   =================================================================== */
+.card--warning {
+  font-size: 17px;
+  line-height: 1.65;
+  margin-bottom: 40px;
+}
+
+.final-title {
+  font-size: 26px;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.35;
+  margin-bottom: 32px;
+}
+.big-percent {
+  display: block;
+  font-size: 56px;
+  color: var(--accent-green);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.caps { text-transform: uppercase; }
+
+.trap-figure {
+  text-align: center;
+  margin: 32px 0;
+}
+.trap-figure img {
+  display: inline-block;
+  max-width: 320px;
+}
+
+.cta-lead {
+  font-size: 18px;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.cta-hint {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.btn--yellow-cta {
+  display: block;
+  width: 100%;
+  max-width: 576px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, #FFFF1C, #FFFF3D);
+  color: var(--text-dark);
+  padding: 28px 24px;
+  border-radius: 15px;
+  font-size: 30px;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(255, 230, 0, 0.35);
+}
+
+/* ===================================================================
+   АДАПТИВ
+   =================================================================== */
+@media (max-width: 720px) {
+  body { font-size: 16px; }
+  .container { padding: 0 16px; }
+  .site-header { padding: 16px 0; }
+  .header-inner { flex-direction: column; gap: 14px; text-align: center; }
+  .usp { font-size: 13px; }
+  .hero { padding: 32px 0 36px; }
+  .hero-title { font-size: 25px; }
+  .card--question { font-size: 17px; padding: 24px 18px; }
+  .hero-photo-badge { width: 44px; height: 44px; font-size: 24px; }
+  .hero-photo-caption { font-size: 11px; padding: 8px 10px; max-width: 160px; }
+  .section { padding: 36px 0; }
+  .section-title { font-size: 22px; }
+  .section-title--left { font-size: 20px; }
+  .card { padding: 22px 18px; }
+  .card--story, .card--red-pill, .card--explain, .card--insight, .card--warning {
+    font-size: 16px;
+  }
+  .chip-grid { grid-template-columns: 1fr; }
+  .brain-block { flex-direction: row; gap: 12px; }
+  .brain-icon { width: 60px; height: 60px; }
+  .final-title { font-size: 20px; }
+  .big-percent { font-size: 42px; }
+  .btn--yellow-cta { font-size: 22px; padding: 22px 18px; }
+  .btn--blue-pill { padding: 14px 30px; font-size: 14px; }
+}
+
+@media (max-width: 380px) {
+  .hero-title { font-size: 22px; }
+  .hero-photo-badge { width: 38px; height: 38px; font-size: 20px; }
+  .btn--yellow-cta { font-size: 19px; }
+}
