@@ -404,7 +404,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .cta-lead {
-  font-size: 16px;
+  font-size: 24px;
   text-align: center;
   line-height: 1.43;
   margin-bottom: 10px;
@@ -768,7 +768,6 @@ a { color: inherit; text-decoration: none; }
   opacity: 0.7;
 }
 
-
 /* ===================================================================
    СТРАНИЦА 4 — Как мы выбираем место
    =================================================================== */
@@ -802,6 +801,7 @@ a { color: inherit; text-decoration: none; }
 .step-img-col img {
   border-radius: 15px;
   max-width: 215px;
+  background-position: right center;
 }
 .section-title--page4-mid {
   font-size: 20px;
@@ -829,6 +829,7 @@ a { color: inherit; text-decoration: none; }
   padding: 14px 28px;
   text-align: center;
   box-sizing: border-box;
+  padding-top: 14px;
 }
 .card--donts .rule-block { margin-bottom: 0; }
 .card--donts .rule-text { font-size: 20px; line-height: 1.4; }
@@ -928,7 +929,6 @@ a { color: inherit; text-decoration: none; }
   .modal-text { font-size: 15px; }
   .modal-btn { padding: 12px 36px; font-size: 16px; }
 }
-
 
 .section--legal {
   padding: 28px 0 60px;
@@ -1230,7 +1230,7 @@ a { color: inherit; text-decoration: none; }
   .section { padding: 24px 0; }
   .section-title { font-size: 16px; }
   .section-title--left { font-size: 16px; }
-  .card { padding: 22px 18px; }
+  .card { padding: 0 18px 22px 18px; }
   .card--story, .card--red-pill, .card--explain, .card--insight, .card--warning {
     font-size: 16px;
   }
@@ -1277,3 +1277,19 @@ a { color: inherit; text-decoration: none; }
   .hero-title--page4 { font-size: 22px; }
   .cta-hint { font-size: 26px; }
 }
+
+@media (min-width: 481px) and (max-width: 769px) {.cta-lead { font-size: 16px; }
+
+.step-img-col img {
+  background-position: 0% 0%;
+}
+
+.card--donts .badge { padding-top: 14px; }}
+
+@media (max-width: 481px) {.cta-lead { font-size: 16px; }
+
+.step-img-col img {
+  background-position: 0% 0%;
+}
+
+.card--donts .badge { padding-top: 14px; }}
