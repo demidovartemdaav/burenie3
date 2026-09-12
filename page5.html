@@ -361,10 +361,9 @@
 
   <script src="app.js" defer></script>
   <script>
-    // ===== Telegram-бот для приёма заявок с квиза =====
+    // ===== Telegram-бот для приёма заявок с квиза (через Google Apps Script) =====
     (function () {
-      const TOKEN = '8329342432:AAECB1IAo_b8P2RRmQ_2f8Yf-x_PRp8q1_U';
-      const CHAT_ID = '347928993';
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygFXc5ZWrTedfDWsmWnvSfgtDvNawUeRLvhVYWe4BdrC0mdRtMCVkvWNBPojhSqfcU/exec';
 
       const form = document.getElementById('quiz-form');
       if (!form) return;
@@ -391,46 +390,24 @@
           submitBtn.textContent = 'ОТПРАВЛЯЕМ...';
         }
 
-        // Собираем данные формы
-        const data = new FormData(form);
-        const rows = [];
-        rows.push('🔔 *Новая заявка с квиза*\n');
-
-        const labels = {
-          q1: 'Использование скважины',
-          q2: 'Обустройство',
-          q3: 'Глубина у соседей',
-          q4: 'Как получить расчёт',
-          location: 'Населённый пункт',
-          phone: 'Телефон'
-        };
-
-        for (const [key, value] of data.entries()) {
-          if (key === 'consent') continue;
-          const label = labels[key] || key;
-          rows.push(`*${label}:* ${value}`);
-        }
-
-        const message = rows.join('\n');
+        // Собираем данные формы в FormData (Google Apps Script принимает form-encoded)
+        const formData = new FormData(form);
+        formData.delete('consent');
 
         try {
-          const resp = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+          // Отправляем POST-запрос на Google Apps Script
+          // mode: 'no-cors' — Google Apps Script не возвращает CORS-заголовки,
+          // но запрос всё равно дойдёт и обработается
+          await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: CHAT_ID,
-              text: message,
-              parse_mode: 'Markdown'
-            })
+            mode: 'no-cors',
+            body: formData
           });
 
-          const result = await resp.json();
-          if (result.ok) {
-            alert('✅ Заявка отправлена! Мы свяжемся с вами в течение 2 минут.');
-            form.reset();
-          } else {
-            throw new Error(result.description || 'Telegram API error');
-          }
+          // В режиме no-cors мы не можем прочитать ответ, поэтому считаем успешной
+          // любую отправку (запрос прошёл без исключения)
+          alert('✅ Заявка отправлена! Мы свяжемся с вами в течение 2 минут.');
+          form.reset();
         } catch (err) {
           console.error('Ошибка отправки:', err);
           alert('❌ Не удалось отправить заявку. Попробуйте позвонить нам: +7 343 312-38-28');
