@@ -220,7 +220,7 @@
         </p>
         <p class="quiz-meta">Время расчёта ~2 минуты 👁️</p>
 
-        <form class="card card--quiz" id="quiz-form" action="https://formspree.io/f/your-form-id" method="POST">
+        <form class="card card--quiz" id="quiz-form">
 
           <div class="quiz-question">
             <div class="rule-head">
@@ -360,5 +360,88 @@
   </main>
 
   <script src="app.js" defer></script>
+  <script>
+    // ===== Telegram-бот для приёма заявок с квиза =====
+    (function () {
+      const TOKEN = '8329342432:AAECB1IAo_b8P2RRmQ_2f8Yf-x_PRp8q1_U';
+      const CHAT_ID = '347928993';
+
+      const form = document.getElementById('quiz-form');
+      if (!form) return;
+
+      const submitBtn = form.querySelector('.btn--quiz-submit');
+      const originalText = submitBtn ? submitBtn.textContent : '';
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        // Проверка обязательных полей
+        const phone = form.querySelector('input[name="phone"]').value.trim();
+        const location = form.querySelector('input[name="location"]').value.trim();
+        const consent = form.querySelector('input[name="consent"]').checked;
+
+        if (!phone || !location || !consent) {
+          alert('Пожалуйста, заполните все обязательные поля и дайте согласие на обработку персональных данных.');
+          return;
+        }
+
+        // Блокируем кнопку
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'ОТПРАВЛЯЕМ...';
+        }
+
+        // Собираем данные формы
+        const data = new FormData(form);
+        const rows = [];
+        rows.push('🔔 *Новая заявка с квиза*\n');
+
+        const labels = {
+          q1: 'Использование скважины',
+          q2: 'Обустройство',
+          q3: 'Глубина у соседей',
+          q4: 'Как получить расчёт',
+          location: 'Населённый пункт',
+          phone: 'Телефон'
+        };
+
+        for (const [key, value] of data.entries()) {
+          if (key === 'consent') continue;
+          const label = labels[key] || key;
+          rows.push(`*${label}:* ${value}`);
+        }
+
+        const message = rows.join('\n');
+
+        try {
+          const resp = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: CHAT_ID,
+              text: message,
+              parse_mode: 'Markdown'
+            })
+          });
+
+          const result = await resp.json();
+          if (result.ok) {
+            alert('✅ Заявка отправлена! Мы свяжемся с вами в течение 2 минут.');
+            form.reset();
+          } else {
+            throw new Error(result.description || 'Telegram API error');
+          }
+        } catch (err) {
+          console.error('Ошибка отправки:', err);
+          alert('❌ Не удалось отправить заявку. Попробуйте позвонить нам: +7 343 312-38-28');
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+          }
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
