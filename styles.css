@@ -404,7 +404,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .cta-lead {
-  font-size: 24px;
+  font-size: 16px;
   text-align: center;
   line-height: 1.43;
   margin-bottom: 10px;
@@ -768,6 +768,7 @@ a { color: inherit; text-decoration: none; }
   opacity: 0.7;
 }
 
+
 /* ===================================================================
    СТРАНИЦА 4 — Как мы выбираем место
    =================================================================== */
@@ -801,7 +802,6 @@ a { color: inherit; text-decoration: none; }
 .step-img-col img {
   border-radius: 15px;
   max-width: 215px;
-  background-position: right center;
 }
 .section-title--page4-mid {
   font-size: 20px;
@@ -829,7 +829,6 @@ a { color: inherit; text-decoration: none; }
   padding: 14px 28px;
   text-align: center;
   box-sizing: border-box;
-  padding-top: 14px;
 }
 .card--donts .rule-block { margin-bottom: 0; }
 .card--donts .rule-text { font-size: 20px; line-height: 1.4; }
@@ -929,6 +928,7 @@ a { color: inherit; text-decoration: none; }
   .modal-text { font-size: 15px; }
   .modal-btn { padding: 12px 36px; font-size: 16px; }
 }
+
 
 .section--legal {
   padding: 28px 0 60px;
@@ -1123,6 +1123,47 @@ a { color: inherit; text-decoration: none; }
 .quiz-input:focus { outline: none; border-color: var(--accent-green); }
 .quiz-input--tel { font-size: 18px; text-align: center; }
 
+/* Динамическое поле для контакта (телефон / Telegram / MAX) */
+.quiz-dynamic-field {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: #f8fbf6;
+  border: 1.5px solid #cde0c4;
+  border-radius: 12px;
+  animation: fieldAppear 0.25s ease;
+}
+@keyframes fieldAppear {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.quiz-dynamic-field[hidden] { display: none; }
+.quiz-dynamic-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+.quiz-dynamic-field .quiz-input {
+  margin-top: 0;
+  border-color: transparent;
+  background: #fff;
+}
+.quiz-dynamic-field .quiz-input:focus { border-color: var(--accent-green); }
+.quiz-dynamic-hint {
+  font-size: 13px;
+  color: #777;
+  margin: 6px 0 0;
+  line-height: 1.4;
+}
+.quiz-dynamic-hint--error {
+  color: #d33;
+}
+.quiz-input--invalid {
+  border-color: #d33 !important;
+  background: #fff5f5 !important;
+}
+
 .quiz-result-text {
   font-size: 18px;
   line-height: 1.4;
@@ -1230,7 +1271,9 @@ a { color: inherit; text-decoration: none; }
   .section { padding: 24px 0; }
   .section-title { font-size: 16px; }
   .section-title--left { font-size: 16px; }
-  .card { padding: 0 18px 22px 18px; }
+  .card { padding: 22px 18px; }
+  /* На странице 4 — без верхнего padding у карточек */
+  .page4 .card { padding: 0 18px 22px 18px; }
   .card--story, .card--red-pill, .card--explain, .card--insight, .card--warning {
     font-size: 16px;
   }
@@ -1277,19 +1320,3 @@ a { color: inherit; text-decoration: none; }
   .hero-title--page4 { font-size: 22px; }
   .cta-hint { font-size: 26px; }
 }
-
-@media (min-width: 481px) and (max-width: 769px) {.cta-lead { font-size: 16px; }
-
-.step-img-col img {
-  background-position: 0% 0%;
-}
-
-.card--donts .badge { padding-top: 14px; }}
-
-@media (max-width: 481px) {.cta-lead { font-size: 16px; }
-
-.step-img-col img {
-  background-position: 0% 0%;
-}
-
-.card--donts .badge { padding-top: 14px; }}

@@ -286,9 +286,23 @@
               <h3 class="quiz-q-title">Как удобнее получить расчёт системы бурения?</h3>
             </div>
             <div class="quiz-options">
-              <label class="quiz-option"><input type="radio" name="q4" value="В MAX"><span>В MAX</span></label>
-              <label class="quiz-option"><input type="radio" name="q4" value="В Telegram"><span>В Telegram</span></label>
               <label class="quiz-option"><input type="radio" name="q4" value="По телефону"><span>По телефону</span></label>
+              <label class="quiz-option"><input type="radio" name="q4" value="В Telegram"><span>В Telegram</span></label>
+              <label class="quiz-option"><input type="radio" name="q4" value="В MAX"><span>В MAX</span></label>
+            </div>
+
+            <!-- Динамическое поле для контакта -->
+            <div class="quiz-dynamic-field" id="contact-field" hidden>
+              <label class="quiz-dynamic-label" id="contact-label" for="contact-input">Номер телефона</label>
+              <input
+                type="tel"
+                id="contact-input"
+                name="contact"
+                class="quiz-input"
+                placeholder="+7 (___) ___-__-__"
+                autocomplete="tel"
+              >
+              <p class="quiz-dynamic-hint" id="contact-hint"></p>
             </div>
           </div>
 
@@ -324,8 +338,6 @@
               <span class="quiz-discount-amount">23 000₽</span>
               <span class="quiz-discount-label">ВАША СКИДКА</span>
             </div>
-
-            <input type="tel" class="quiz-input quiz-input--tel" name="phone" placeholder="+7" required>
 
             <label class="quiz-consent">
               <input type="checkbox" name="consent" required>
@@ -413,9 +425,141 @@
       });
     })();
 
+    // ===== Динамическое поле контакта + валидация =====
+    (function () {
+      const q4Radios = document.querySelectorAll('input[name="q4"]');
+      const contactField = document.getElementById('contact-field');
+      const contactLabel = document.getElementById('contact-label');
+      const contactInput = document.getElementById('contact-input');
+      const contactHint = document.getElementById('contact-hint');
+
+      // Конфиг полей по способу связи
+      const fieldConfig = {
+        'По телефону': {
+          label: 'Номер телефона',
+          type: 'tel',
+          placeholder: '+7 (___) ___-__-__',
+          hint: 'На этот номер позвонит наш специалист.',
+          validate: validatePhone
+        },
+        'В Telegram': {
+          label: 'Ваш username в Telegram',
+          type: 'text',
+          placeholder: '@username',
+          hint: 'Можно посмотреть в настройках Telegram → Username.',
+          validate: validateTelegram
+        },
+        'В MAX': {
+          label: 'Номер телефона в MAX',
+          type: 'tel',
+          placeholder: '+7 (___) ___-__-__',
+          hint: 'MAX привязан к номеру телефона — укажите тот, на который зарегистрирован аккаунт MAX.',
+          validate: validatePhone
+        }
+      };
+
+      // Маска для российского телефона
+      function maskPhone(value) {
+        let digits = value.replace(/\D/g, '');
+        if (digits.startsWith('8')) digits = '7' + digits.slice(1);
+        if (!digits.startsWith('7')) digits = '7' + digits;
+        digits = digits.slice(0, 11);
+        let out = '+7';
+        if (digits.length > 1) out += ' (' + digits.slice(1, 4);
+        if (digits.length >= 4) out += ') ' + digits.slice(4, 7);
+        if (digits.length >= 7) out += '-' + digits.slice(7, 9);
+        if (digits.length >= 9) out += '-' + digits.slice(9, 11);
+        return out;
+      }
+
+      function validatePhone(value) {
+        const digits = value.replace(/\D/g, '');
+        if (digits.length === 0) return { ok: false, error: 'Поле обязательно для заполнения.' };
+        if (digits.length < 11) return { ok: false, error: 'Номер слишком короткий.' };
+        if (!/^7\d{10}$/.test(digits)) return { ok: false, error: 'Введите корректный российский номер.' };
+        return { ok: true, normalized: '+' + digits };
+      }
+
+      function validateTelegram(value) {
+        let v = value.trim();
+        if (!v) return { ok: false, error: 'Поле обязательно для заполнения.' };
+        if (!v.startsWith('@')) v = '@' + v;
+        if (!/^@[a-zA-Z][a-zA-Z0-9_]{4,31}$/.test(v)) {
+          return { ok: false, error: 'Username должен начинаться с буквы, 5-32 символа: латиница, цифры, _.' };
+        }
+        return { ok: true, normalized: v };
+      }
+
+      function applyConfig(value) {
+        const cfg = fieldConfig[value];
+        if (!cfg) {
+          contactField.hidden = true;
+          contactInput.value = '';
+          contactHint.textContent = '';
+          contactInput.classList.remove('quiz-input--invalid');
+          return;
+        }
+        contactField.hidden = false;
+        contactLabel.textContent = cfg.label;
+        contactInput.type = cfg.type;
+        contactInput.value = '';
+        contactInput.placeholder = cfg.placeholder;
+        contactInput.classList.remove('quiz-input--invalid');
+        contactHint.textContent = cfg.hint;
+        contactHint.classList.remove('quiz-dynamic-hint--error');
+      }
+
+      // Переключение radio
+      q4Radios.forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          applyConfig(radio.value);
+        });
+      });
+
+      // Маска телефона при вводе
+      contactInput.addEventListener('input', function () {
+        const cfg = fieldConfig[document.querySelector('input[name="q4"]:checked')?.value];
+        if (cfg && cfg.type === 'tel') {
+          contactInput.value = maskPhone(contactInput.value);
+        }
+        contactInput.classList.remove('quiz-input--invalid');
+        contactHint.classList.remove('quiz-dynamic-hint--error');
+        const result = cfg.validate(contactInput.value);
+        if (!result.ok && contactInput.value.length > 0) {
+          contactHint.textContent = result.error;
+          contactHint.classList.add('quiz-dynamic-hint--error');
+        } else {
+          contactHint.textContent = cfg.hint;
+        }
+      });
+
+      // Экспортируем валидатор для обработчика submit
+      window.validateContactField = function () {
+        const checked = document.querySelector('input[name="q4"]:checked');
+        if (!checked) return { ok: false, error: 'Выберите способ связи.' };
+        const cfg = fieldConfig[checked.value];
+        if (!cfg) return { ok: true };
+        const result = cfg.validate(contactInput.value);
+        if (!result.ok) {
+          contactInput.classList.add('quiz-input--invalid');
+          contactHint.textContent = result.error;
+          contactHint.classList.add('quiz-dynamic-hint--error');
+          contactInput.focus();
+        }
+        return result;
+      };
+
+      window.getContactFieldLabel = function () {
+        const checked = document.querySelector('input[name="q4"]:checked');
+        if (!checked) return 'Контакт';
+        const cfg = fieldConfig[checked.value];
+        return cfg ? cfg.label : 'Контакт';
+      };
+    })();
+
     // ===== Telegram-бот для приёма заявок с квиза (через Google Apps Script) =====
     (function () {
-      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygFXc5ZWrTedfDWsmWnvSfgtDvNawUeRLvhVYWe4BdrC0mdRtMCVkvWNBPojhSqfcU/exec';
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqIebTTU_gU9kJx93p_jz29hm5NV6ApJGv4sySJqpLG9VdBoDhk1XAXCoHkDsbCGcT/exec';
 
       const form = document.getElementById('quiz-form');
       if (!form) return;
@@ -427,12 +571,18 @@
         e.preventDefault();
 
         // Проверка обязательных полей
-        const phone = form.querySelector('input[name="phone"]').value.trim();
         const location = form.querySelector('input[name="location"]').value.trim();
         const consent = form.querySelector('input[name="consent"]').checked;
 
-        if (!phone || !location || !consent) {
+        if (!location || !consent) {
           showModal('⚠️', 'Не все поля заполнены', 'Пожалуйста, заполните все обязательные поля и дайте согласие на обработку персональных данных.');
+          return;
+        }
+
+        // Проверка контакта (телефон / Telegram / MAX)
+        const contactResult = window.validateContactField();
+        if (!contactResult.ok) {
+          showModal('⚠️', 'Проверьте контактные данные', contactResult.error);
           return;
         }
 
@@ -445,21 +595,21 @@
         // Собираем данные формы в FormData (Google Apps Script принимает form-encoded)
         const formData = new FormData(form);
         formData.delete('consent');
+        // Подменяем контакт на нормализованный (маска/@username)
+        formData.set('contact', contactResult.normalized);
 
         try {
-          // Отправляем POST-запрос на Google Apps Script
-          // mode: 'no-cors' — Google Apps Script не возвращает CORS-заголовки,
-          // но запрос всё равно дойдёт и обработается
           await fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
             body: formData
           });
 
-          // В режиме no-cors мы не можем прочитать ответ, поэтому считаем успешной
-          // любую отправку (запрос прошёл без исключения)
           showModal('✅', 'Заявка отправлена!', 'Мы свяжемся с вами в течение 2 минут.', function () {
             form.reset();
+            // Скрываем динамическое поле после сброса
+            const cf = document.getElementById('contact-field');
+            if (cf) cf.hidden = true;
           });
         } catch (err) {
           console.error('Ошибка отправки:', err);
